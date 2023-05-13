@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field, root_validator, validator
 from .tenants import TenantSchema
 
 class PropertySchema(BaseModel):
-    id: str = Field(..., alias="_id")
     title: str = Field(...)
     description: str = Field(...)
     price: float = Field(...)

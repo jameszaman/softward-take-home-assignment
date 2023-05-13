@@ -1,7 +1,4 @@
-from typing import Optional
-from bson import ObjectId
 from pydantic import BaseModel, Field, validator
-from bson import ObjectId
 
 class TenantSchema(BaseModel):
     name: str = Field(..., example="John Smith")

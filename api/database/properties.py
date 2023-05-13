@@ -26,9 +26,13 @@ class PropertyDB:
     async def get_property(cls, id: str) -> PropertySchema:
         try:
             property = await cls.db.properties.find_one({"_id": ObjectId(id)})
+            if property:
+                return PropertySchema(**property)
+            else:
+                raise HTTPException(404, "Property not found")
         except Exception as e:
-            raise HTTPException(404, "Property not found")
-        return PropertySchema(**property)
+            raise HTTPException(400, "Please give proper ObjectId")
+        
 
     @classmethod
     async def add_property(cls, property: PropertySchema):
@@ -55,5 +59,5 @@ class PropertyDB:
             result = await cls.db.properties.delete_one({"_id": ObjectId(id)})
             return result.deleted_count
         except:
-            raise HTTPException(404, "Property not found")
+            raise HTTPException(400, "Please give proper ObjectId")
             

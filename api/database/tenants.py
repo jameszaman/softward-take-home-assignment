@@ -1,4 +1,3 @@
-from ast import List
 from typing import Optional
 from bson import ObjectId
 from fastapi import HTTPException
@@ -21,9 +20,14 @@ class TenantDB:
 
     @classmethod
     async def add_tenant_to_property(cls, id: str, tenant: TenantSchema):
-        property = await cls.db.properties.find_one({"_id": ObjectId(id)})
-        if not property:
-            raise HTTPException(404, "Property not found")
+        property = None
+        try:
+            property = await cls.db.properties.find_one({"_id": ObjectId(id)})
+            if not property:
+                raise HTTPException(404, "Property not found")
+        except:
+            raise HTTPException(400, "Please give proper ObjectId")
+        
         property["tenants"].append(tenant)
         property_dict = PropertySchema(**property).dict()
         result = await cls.db.properties.replace_one(
@@ -36,9 +40,14 @@ class TenantDB:
 
     @classmethod
     async def delete_tenant_from_property(cls, property_id: str, tenant_email: str):
-        property = await cls.db.properties.find_one({"_id": ObjectId(property_id)})
-        if not property:
-            raise HTTPException(404, "Property not found")
+        property = None
+        try:
+            property = await cls.db.properties.find_one({"_id": ObjectId(property_id)})
+            if not property:
+                raise HTTPException(404, "Property not found")
+        except:
+            raise HTTPException(400, "Please give proper ObjectId")
+        
         tenants = property.get("tenants", [])
         
         for i, tenant in enumerate(tenants):
@@ -57,7 +66,12 @@ class TenantDB:
 
     @classmethod
     async def get_tenant_from_property(cls, property_id: str, tenant_email: str) -> TenantSchema:
-        property = await cls.db.properties.find_one({"_id": ObjectId(property_id)})
+        property = None
+        try:
+            property = await cls.db.properties.find_one({"_id": ObjectId(property_id)})
+        except:
+            raise HTTPException(400, "Please give proper ObjectId")
+        
         if not property:
             raise HTTPException(404, "Property not found")
 
@@ -69,7 +83,12 @@ class TenantDB:
 
     @classmethod
     async def update_tenant_from_property(cls, property_id: str, tenant_email: str, updated_tenant: dict):
-        property = await cls.db.properties.find_one({"_id": ObjectId(property_id)})
+        property = None
+        try:
+            property = await cls.db.properties.find_one({"_id": ObjectId(property_id)})
+        except:
+            raise HTTPException(400, "Please give proper ObjectId")
+        
         if not property:
             raise HTTPException(404, "Property not found")
         
