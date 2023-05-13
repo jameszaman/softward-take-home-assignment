@@ -1,12 +1,10 @@
-from typing import List, Optional
+from typing import List
 from datetime import datetime
-import uuid
-from bson import ObjectId
 from pydantic import BaseModel, Field, root_validator, validator
 from .tenants import TenantSchema
 
 class PropertySchema(BaseModel):
-    id: Optional[str] = None
+    id: str = Field(..., alias="_id")
     title: str = Field(...)
     description: str = Field(...)
     price: float = Field(...)

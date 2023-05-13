@@ -10,6 +10,7 @@ router = APIRouter(prefix=API_PREFIX + '/properties')
 
 @router.post("/", response_description="Add new property")
 async def create_property(property: PropertySchema = Body(...), api_key: str = Depends(check_api_key)):
+    print("HERE")
     property = jsonable_encoder(property)
     new_property = await PropertyDB.add_property(property)
     return new_property

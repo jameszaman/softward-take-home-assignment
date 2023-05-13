@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -23,7 +24,10 @@ class PropertyDB:
 
     @classmethod
     async def get_property(cls, id: str) -> PropertySchema:
-        property = await cls.db.properties.find_one({"_id": ObjectId(id)})
+        try:
+            property = await cls.db.properties.find_one({"_id": ObjectId(id)})
+        except Exception as e:
+            raise HTTPException(404, "Property not found")
         return PropertySchema(**property)
 
     @classmethod
@@ -34,14 +38,22 @@ class PropertyDB:
 
     @classmethod
     async def update_property(cls, id: str, property: PropertySchema):
-        property_dict = property
-        property_dict["updated_at"] = datetime.utcnow()
-        result = await cls.db.properties.update_one(
-            {"_id": ObjectId(id)}, {"$set": property_dict}
-        )
-        return result.modified_count
+        try:
+            property_dict = property
+            property_dict["updated_at"] = datetime.utcnow()
+            result = await cls.db.properties.update_one(
+                {"_id": ObjectId(id)}, {"$set": property_dict}
+            )
+        except:
+            pass
+        finally:
+            return result.modified_count
 
     @classmethod
     async def delete_property(cls, id: str):
-        result = await cls.db.properties.delete_one({"_id": ObjectId(id)})
-        return result.deleted_count
+        try:
+            result = await cls.db.properties.delete_one({"_id": ObjectId(id)})
+            return result.deleted_count
+        except:
+            raise HTTPException(404, "Property not found")
+            

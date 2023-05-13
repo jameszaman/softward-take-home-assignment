@@ -9,15 +9,6 @@ from ..models.tenants import TenantSchema
 
 router = APIRouter(prefix=API_PREFIX +'/tenants')
 
-@router.get("/{property_id}/tenants", response_description="Get all tenants of a property")
-async def get_all_tenants(property_id: str, api_key: str = Depends(check_api_key)):
-    property = await PropertyDB.get_property(property_id)
-    if not property:
-        raise HTTPException(404, "Property not found")
-    
-    tenants = await TenantDB.get_all_tenants_from_property(property_id)
-    return tenants
-
 
 @router.post("/{property_id}", response_description="Add new tenant")
 async def create_tenant(property_id: str, tenant: TenantSchema = Body(...), api_key: str = Depends(check_api_key)):
